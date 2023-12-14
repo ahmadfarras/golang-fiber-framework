@@ -16,7 +16,7 @@ type User struct {
 	UpdatedAt time.Time `gorm:"updated_at;autoCreateTime;autoUpdateTime"`
 }
 
-func CreateNewUser(fullName, password string, email string) User {
+func CreateNewUser(fullName, password, email string) User {
 	return User{
 		ID:        uuid.New(),
 		FullName:  fullName,
@@ -25,4 +25,10 @@ func CreateNewUser(fullName, password string, email string) User {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
+}
+
+func (u *User) UpdateUser(fullName, password, email string) {
+	u.FullName = fullName
+	u.Password = password
+	u.Email = email
 }

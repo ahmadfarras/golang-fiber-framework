@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	dsn := "root:password@tcp(:3306)/belajar_golang"
+	dsn := "root:password@tcp(:3306)/belajar_golang?parseTime=true"
 	gormConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
