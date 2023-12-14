@@ -1,15 +1,31 @@
 package main
 
 import (
+	"ahmadfarras/fiberframework/internal/route"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
-	app := fiber.New()
+	dsn := "root:password@tcp(:3306)/belajar_golang"
+	gormConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	db, err := gormConn.DB()
+	if err != nil {
+		panic(err)
+	}
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+	app := fiber.New(fiber.Config{
+		IdleTimeout: time.Second * 5,
 	})
-
+	route.InitHttpRoute(app, gormConn)
 	app.Listen(":8080")
 }
