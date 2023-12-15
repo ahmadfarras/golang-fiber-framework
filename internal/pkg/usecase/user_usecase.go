@@ -6,7 +6,7 @@ import (
 )
 
 type UserUsecase interface {
-	Create(request request.CreateUser) error
+	Create(request request.CreateUser) (string, error)
 	GetAll() ([]response.UserDetailResponse, error)
 	GetById(id string) (response.UserDetailResponse, error)
 	Update(id string, request request.UpdateUser) error

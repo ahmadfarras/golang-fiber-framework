@@ -16,7 +16,7 @@ func InitHttpRoute(app *fiber.App, db *gorm.DB) {
 	usersGroup := app.Group("/users")
 	usersGroup.Post("/create", userController.CreateNewUser)
 	usersGroup.Get("", userController.GetAllUser)
-	usersGroup.Get("/:id", userController.GetById)
+	usersGroup.Get("/:id", userController.GetById).Name("users.show")
 	usersGroup.Put("/:id", userController.Update)
 	usersGroup.Delete("/:id", userController.Delete)
 }

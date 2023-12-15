@@ -20,15 +20,18 @@ func NewUserUsecase(userRepository repository.UserRepository) usecase.UserUsecas
 	}
 }
 
-func (u *UserUsecaseImpl) Create(request request.CreateUser) error {
+func (u *UserUsecaseImpl) Create(request request.CreateUser) (string, error) {
+	var userId string
+
 	newUser := model.CreateNewUser(request.FullName, request.Password, request.Email)
 
 	err := u.userRepository.Create(newUser)
 	if err != nil {
-		return err
+		return userId, err
 	}
 
-	return nil
+	userId = newUser.ID.String()
+	return userId, nil
 }
 
 func (u *UserUsecaseImpl) GetAll() ([]response.UserDetailResponse, error) {
