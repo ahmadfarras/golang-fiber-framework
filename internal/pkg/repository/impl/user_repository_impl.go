@@ -32,9 +32,9 @@ func (u *UserRepositoryGormImpl) GetAll(users *[]model.User) error {
 
 func (u *UserRepositoryGormImpl) GetById(id uuid.UUID) (model.User, error) {
 	user := model.User{ID: id}
-	u.db.First(&user)
+	d := u.db.First(&user)
 
-	return user, nil
+	return user, d.Error
 }
 
 func (u *UserRepositoryGormImpl) Update(updatedUser model.User) error {

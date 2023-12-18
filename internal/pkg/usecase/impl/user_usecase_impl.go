@@ -48,7 +48,7 @@ func (u *UserUsecaseImpl) GetById(id string) (response.UserDetailResponse, error
 	userId := uuid.MustParse(id)
 	user, err := u.userRepository.GetById(userId)
 	if err != nil {
-		return response.UserDetailResponse{}, nil
+		return response.UserDetailResponse{}, err
 	}
 
 	return response.BuildUserDetailResponse(user), nil
@@ -59,7 +59,7 @@ func (u *UserUsecaseImpl) Update(id string, request request.UpdateUser) error {
 	userId := uuid.MustParse(id)
 	user, err := u.userRepository.GetById(userId)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	user.UpdateUser(request.FullName, request.Password, request.Email)
@@ -72,7 +72,7 @@ func (u *UserUsecaseImpl) DeleteById(id string) error {
 	userId := uuid.MustParse(id)
 	user, err := u.userRepository.GetById(userId)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	u.userRepository.Delete(user)

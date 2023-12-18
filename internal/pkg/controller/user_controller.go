@@ -3,7 +3,9 @@ package controller
 import (
 	"ahmadfarras/fiberframework/internal/pkg/domain/model/request"
 	"ahmadfarras/fiberframework/internal/pkg/domain/model/response"
+	"ahmadfarras/fiberframework/internal/pkg/handler"
 	"ahmadfarras/fiberframework/internal/pkg/usecase"
+	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,48 +26,53 @@ func (u *UserController) CreateNewUser(context *fiber.Ctx) error {
 	request := new(request.CreateUser)
 	err := context.BodyParser(request)
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
 	userId, err := u.userUsecase.Create(*request)
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
 	location, err := context.GetRouteURL("users.show", fiber.Map{"id": userId})
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
 	context.Location(location)
 	context.SendStatus(fiber.StatusCreated)
-	return context.JSON(response.Response{
-		StatusCode: 201,
-		Message:    "Created",
-	})
+	return context.JSON(response.BuildSuccessResponse(http.StatusCreated, "Created", nil))
 }
 
 func (u *UserController) GetAllUser(context *fiber.Ctx) error {
 
-	response, err := u.userUsecase.GetAll()
+	resp, err := u.userUsecase.GetAll()
 	if err != nil {
 		return err
 	}
 
-	context.SendStatus(fiber.StatusOK)
-	return context.JSON(response)
+	context.SendStatus(http.StatusOK)
+	return context.JSON(response.BuildSuccessResponse(http.StatusOK, "Success", resp))
 }
 
 func (u *UserController) GetById(context *fiber.Ctx) error {
 
 	userId := context.Params("id")
-	response, err := u.userUsecase.GetById(userId)
+	resp, err := u.userUsecase.GetById(userId)
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
-	context.SendStatus(fiber.StatusOK)
-	return context.JSON(response)
+	context.SendStatus(http.StatusOK)
+	return context.JSON(response.BuildSuccessResponse(http.StatusOK, "Success", resp))
 }
 
 func (u *UserController) Update(context *fiber.Ctx) error {
@@ -78,19 +85,20 @@ func (u *UserController) Update(context *fiber.Ctx) error {
 	request := new(request.UpdateUser)
 	err := context.BodyParser(request)
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
 	err = u.userUsecase.Update(userId, *request)
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
-	context.SendStatus(fiber.StatusOK)
-	return context.JSON(response.Response{
-		StatusCode: 200,
-		Message:    "Success",
-	})
+	context.SendStatus(http.StatusOK)
+	return context.JSON(response.BuildSuccessResponse(http.StatusOK, "Success", nil))
 }
 
 func (u *UserController) Delete(context *fiber.Ctx) error {
@@ -99,12 +107,11 @@ func (u *UserController) Delete(context *fiber.Ctx) error {
 
 	err := u.userUsecase.DeleteById(userId)
 	if err != nil {
-		return err
+		r := handler.HandleError(err)
+		context.SendStatus(r.StatusCode)
+		return context.JSON(r)
 	}
 
-	context.SendStatus(fiber.StatusOK)
-	return context.JSON(response.Response{
-		StatusCode: 200,
-		Message:    "Success",
-	})
+	context.SendStatus(http.StatusOK)
+	return context.JSON(response.BuildSuccessResponse(http.StatusOK, "Success", nil))
 }
